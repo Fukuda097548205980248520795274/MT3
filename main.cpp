@@ -21,34 +21,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	    変数を作る
 	---------------*/
 
-	// 移動
-	Vector3 translate = { 4.1f , 2.6f , 0.8f };
+	// 回転
+	Vector3 rotate{ 0.4f , 1.43f , -0.8f };
 
-	// 平行移動行列
-	Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
-
-
-	// 拡縮
-	Vector3 scale = { 1.5f , 5.2f , 7.3f };
-
-	// 拡大縮小行列
-	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
-
-
-	// 座標
-	Vector3 point = { 2.3f , 3.8f , 1.4f };
-
-	// 座標変換で使う行列
-	Matrix4x4 transformMatrix =
-	{
-		1.0f , 2.0f , 3.0f , 4.0f ,
-		3.0f , 1.0f , 1.0f , 2.0f ,
-		1.0f , 4.0f , 2.0f , 3.0f ,
-		2.0f , 2.0f , 1.0f , 3.0f
-	};
-
-	// 変換した座標
-	Vector3 transformed = Transform(point, transformMatrix);
+	// 回転行列
+	Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
+	Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
+	Matrix4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
+	Matrix4x4 rotateXYZMatrix = Multiply(Multiply(rotateXMatrix, rotateYMatrix), rotateZMatrix);
 
 
 	// 行の高さ
@@ -77,9 +57,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		/// ↓描画処理ここから
 		///
 
-		VectorScreenPrintf(0, 0, transformed, "transformed");
-		MatrixScreenPrintf(0, 32, translateMatrix, "translateMatrix");
-		MatrixScreenPrintf(0, 32 + rowHeight, scaleMatrix, "scaleMatrix");
+		MatrixScreenPrintf(0, 0, rotateXMatrix, "rotateXMatrix");
+		MatrixScreenPrintf(0, rowHeight, rotateYMatrix, "rotateYMatrix");
+		MatrixScreenPrintf(0, rowHeight * 2, rotateZMatrix, "rotateZMatrix");
+		MatrixScreenPrintf(0, rowHeight * 3, rotateXYZMatrix, "rotateXYZMatrix");
 		
 		///
 		/// ↑描画処理ここまで
