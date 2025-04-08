@@ -1,6 +1,7 @@
 #include <Novice.h>
 #include "Struct.h"
 #include "./Func/Vector/Vector.h"
+#include "./Func/Matrix/Matrix.h"
 
 const char kWindowTitle[] = "LE2A_11_フクダソウワ_MT3";
 
@@ -20,21 +21,40 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	    変数を作る
 	---------------*/
 
-	// ベクトル
-	Vector3 v1 = { 1.0f , 3.0f , -5.0f };
-	Vector3 v2 = { 4.0f , -1.0f , 2.0f };
+	// 行列1
+	Matrix4x4 m1 =
+	{
+		3.2f , 0.7f , 9.6f , 4.4f ,
+		5.5f , 1.3f , 7.8f , 2.1f ,
+		6.9f , 8.0f , 2.6f , 1.0f ,
+		0.5f , 7.2f , 5.1f , 3.3f
+	};
 
-	// スカラー
-	float k = 4.0f;
+	// 行列2
+	Matrix4x4 m2 =
+	{
+		4.1f , 6.5f , 3.3f , 2.2f ,
+		8.8f , 0.6f , 9.9f , 7.7f ,
+		1.1f , 5.5f , 6.6f , 0.0f ,
+		3.3f , 9.9f , 8.8f , 2.2f
+	};
 
 
 	// 計算結果
-	Vector3 resultAdd = Add(v1, v2);
-	Vector3 resultSubtract = Subtract(v1, v2);
-	Vector3 resultMultiply = Multiply(k, v1);
-	float resultDot = Dot(v1, v2);
-	float resultLength = Length(v1);
-	Vector3 resultNormalize = Normalize(v2);
+	Matrix4x4 resultAdd = Add(m1, m2);
+	Matrix4x4 resultMultiply = Multiply(m1, m2);
+	Matrix4x4 resultSubtract = Subtract(m1, m2);
+	Matrix4x4 inverseM1 = Inverse(m1);
+	Matrix4x4 inverseM2 = Inverse(m2);
+	Matrix4x4 transposeM1 = Transpose(m1);
+	Matrix4x4 transposeM2 = Transpose(m2);
+	Matrix4x4 idenity = MakeIdenity4x4();
+
+
+	// 行の高さ
+	int rowHeight = 128;
+	int columnWidth = 256;
+	
 
 
 	// ウィンドウの×ボタンが押されるまでループ
@@ -58,13 +78,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		/// ↓描画処理ここから
 		///
 
-		VectorScreenPrintf(0, 0, resultAdd, " : Add");
-		VectorScreenPrintf(0, kRowHeight, resultSubtract, " : Subtract");
-		VectorScreenPrintf(0, kRowHeight * 2, resultMultiply, " : Multiply");
-		Novice::ScreenPrintf(0, kRowHeight * 3, "%.02f : Dot", resultDot);
-		Novice::ScreenPrintf(0, kRowHeight * 4, "%.02f : Length", resultLength);
-		VectorScreenPrintf(0, kRowHeight * 5, resultNormalize, " : Normalize");
-
+		MatrixScreenPrintf(0, 0, resultAdd, "Add");
+		MatrixScreenPrintf(0, rowHeight, resultSubtract, "Subtract");
+		MatrixScreenPrintf(0, rowHeight * 2, resultMultiply, "Multiply");
+		MatrixScreenPrintf(0, rowHeight * 3, inverseM1, "inverseM1");
+		MatrixScreenPrintf(0, rowHeight * 4, inverseM2, "inverseM2");
+		MatrixScreenPrintf(columnWidth, 0, transposeM1, "transposeM1");
+		MatrixScreenPrintf(columnWidth, rowHeight, transposeM2, "transposeM2");
+		MatrixScreenPrintf(columnWidth, rowHeight * 2, idenity, "idenity");
+		
 		///
 		/// ↑描画処理ここまで
 		///
