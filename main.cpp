@@ -21,18 +21,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	    変数を作る
 	---------------*/
 
+	// 拡縮
+	Vector3 scale = { 1.2f , 0.79f , -2.1f };
+
 	// 回転
-	Vector3 rotate{ 0.4f , 1.43f , -0.8f };
+	Vector3 rotate = { 0.4f , 1.43f , -0.8f };
 
-	// 回転行列
-	Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
-	Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
-	Matrix4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
-	Matrix4x4 rotateXYZMatrix = Multiply(Multiply(rotateXMatrix, rotateYMatrix), rotateZMatrix);
+	// 移動
+	Vector3 translate = { 2.7f , -4.15f , 1.57f };
 
 
-	// 行の高さ
-	int rowHeight = 128;
+	// ワールド行列
+	Matrix4x4 worldMatrix = MakeAffineMatrix(scale, rotate, translate);
 	
 
 
@@ -57,10 +57,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		/// ↓描画処理ここから
 		///
 
-		MatrixScreenPrintf(0, 0, rotateXMatrix, "rotateXMatrix");
-		MatrixScreenPrintf(0, rowHeight, rotateYMatrix, "rotateYMatrix");
-		MatrixScreenPrintf(0, rowHeight * 2, rotateZMatrix, "rotateZMatrix");
-		MatrixScreenPrintf(0, rowHeight * 3, rotateXYZMatrix, "rotateXYZMatrix");
+		MatrixScreenPrintf(0, 0, worldMatrix, "worldMatrix");
 		
 		///
 		/// ↑描画処理ここまで
