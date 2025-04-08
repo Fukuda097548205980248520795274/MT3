@@ -20,6 +20,9 @@
     <Filter Include="Func\Vector">
       <UniqueIdentifier>{bd41f478-9129-498c-bae6-0754caac6544}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Func\Matrix">
+      <UniqueIdentifier>{fe17878a-d723-4310-9f81-fa29417a2701}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C:\KamataEngine\DirectXGame\base\DirectXCommon.cpp">
@@ -46,6 +49,9 @@
     </ClCompile>
     <ClCompile Include="Func\Vector\Vector.cpp">
       <Filter>Func\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="Func\Matrix\Matrix.cpp">
+      <Filter>Func\Matrix</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -125,5 +131,8 @@
       <Filter>Func\Vector</Filter>
     </ClInclude>
     <ClInclude Include="Const.h" />
+    <ClInclude Include="Func\Matrix\Matrix.h">
+      <Filter>Func\Matrix</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
