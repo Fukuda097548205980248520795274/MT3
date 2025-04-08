@@ -21,39 +21,38 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	    変数を作る
 	---------------*/
 
-	// 行列1
-	Matrix4x4 m1 =
+	// 移動
+	Vector3 translate = { 4.1f , 2.6f , 0.8f };
+
+	// 平行移動行列
+	Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
+
+
+	// 拡縮
+	Vector3 scale = { 1.5f , 5.2f , 7.3f };
+
+	// 拡大縮小行列
+	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
+
+
+	// 座標
+	Vector3 point = { 2.3f , 3.8f , 1.4f };
+
+	// 座標変換で使う行列
+	Matrix4x4 transformMatrix =
 	{
-		3.2f , 0.7f , 9.6f , 4.4f ,
-		5.5f , 1.3f , 7.8f , 2.1f ,
-		6.9f , 8.0f , 2.6f , 1.0f ,
-		0.5f , 7.2f , 5.1f , 3.3f
+		1.0f , 2.0f , 3.0f , 4.0f ,
+		3.0f , 1.0f , 1.0f , 2.0f ,
+		1.0f , 4.0f , 2.0f , 3.0f ,
+		2.0f , 2.0f , 1.0f , 3.0f
 	};
 
-	// 行列2
-	Matrix4x4 m2 =
-	{
-		4.1f , 6.5f , 3.3f , 2.2f ,
-		8.8f , 0.6f , 9.9f , 7.7f ,
-		1.1f , 5.5f , 6.6f , 0.0f ,
-		3.3f , 9.9f , 8.8f , 2.2f
-	};
-
-
-	// 計算結果
-	Matrix4x4 resultAdd = Add(m1, m2);
-	Matrix4x4 resultMultiply = Multiply(m1, m2);
-	Matrix4x4 resultSubtract = Subtract(m1, m2);
-	Matrix4x4 inverseM1 = Inverse(m1);
-	Matrix4x4 inverseM2 = Inverse(m2);
-	Matrix4x4 transposeM1 = Transpose(m1);
-	Matrix4x4 transposeM2 = Transpose(m2);
-	Matrix4x4 idenity = MakeIdenity4x4();
+	// 変換した座標
+	Vector3 transformed = Transform(point, transformMatrix);
 
 
 	// 行の高さ
 	int rowHeight = 128;
-	int columnWidth = 256;
 	
 
 
@@ -78,14 +77,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		/// ↓描画処理ここから
 		///
 
-		MatrixScreenPrintf(0, 0, resultAdd, "Add");
-		MatrixScreenPrintf(0, rowHeight, resultSubtract, "Subtract");
-		MatrixScreenPrintf(0, rowHeight * 2, resultMultiply, "Multiply");
-		MatrixScreenPrintf(0, rowHeight * 3, inverseM1, "inverseM1");
-		MatrixScreenPrintf(0, rowHeight * 4, inverseM2, "inverseM2");
-		MatrixScreenPrintf(columnWidth, 0, transposeM1, "transposeM1");
-		MatrixScreenPrintf(columnWidth, rowHeight, transposeM2, "transposeM2");
-		MatrixScreenPrintf(columnWidth, rowHeight * 2, idenity, "idenity");
+		VectorScreenPrintf(0, 0, transformed, "transformed");
+		MatrixScreenPrintf(0, 32, translateMatrix, "translateMatrix");
+		MatrixScreenPrintf(0, 32 + rowHeight, scaleMatrix, "scaleMatrix");
 		
 		///
 		/// ↑描画処理ここまで
