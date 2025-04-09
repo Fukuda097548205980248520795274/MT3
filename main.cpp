@@ -4,6 +4,7 @@
 #include "./Func/Vector/Vector.h"
 #include "./Func/Matrix/Matrix.h"
 #include "./Func/Draw/Draw.h"
+#include "imgui.h"
 
 const char kWindowTitle[] = "LE2A_11_フクダソウワ_MT3";
 
@@ -32,11 +33,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	Sphere sphere;
 	sphere.center = { 0.0f , 0.0f , 0.0f };
 	sphere.radius = 0.5f;
-	
 
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
+
 		// フレームの開始
 		Novice::BeginFrame();
 
@@ -48,6 +49,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		/// ↓更新処理ここから
 		///
 
+		ImGui::Begin("Window");
+		ImGui::DragFloat3("cameraTranslate", &cameraTranslate.x, 0.01f);
+		ImGui::DragFloat3("cameraRotate", &cameraRotate.x , 0.01f);
+		ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
+		ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
+		ImGui::End();
+
+
+		/*-------------------
+		    座標変換の行列
+		-------------------*/
+
 		// ビュー行列
 		Matrix4x4 viewMatrix = Inverse(MakeAffineMatrix({ 1.0f , 1.0f , 1.0f }, cameraRotate, cameraTranslate));
 
@@ -57,6 +70,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		// ビューポート行列
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0.0f, 0.0f, static_cast<float>(kWindowWidth), static_cast<float>(kWindowHeight), 0.0f, 1.0f);
 
+
 		///
 		/// ↑更新処理ここまで
 		///
@@ -65,11 +79,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		/// ↓描画処理ここから
 		///
 
+
+		/*----------
+		    図形
+		----------*/
+
 		// グリッド
 		DrawGrid(Multiply(viewMatrix, projectionMatrix), viewportMatrix);
 
 		// 球
 		DrawSphere(sphere, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0x000000FF);
+
 		
 		///
 		/// ↑描画処理ここまで
