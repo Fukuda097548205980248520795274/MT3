@@ -65,6 +65,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		/// ↓描画処理ここから
 		///
 
+		// グリッド
+		DrawGrid(Multiply(viewMatrix, projectionMatrix), viewportMatrix);
+
 		// 球
 		DrawSphere(sphere, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0x000000FF);
 		
