@@ -3,6 +3,8 @@
 #include "Const.h"
 #include "./Func/Vector/Vector.h"
 #include "./Func/Matrix/Matrix.h"
+#include "./Func/Draw/Draw.h"
+#include "imgui.h"
 
 const char kWindowTitle[] = "LE2A_11_フクダソウワ_MT3";
 
@@ -22,32 +24,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	    変数を作る
 	---------------*/
 
-	/*   クロス積   */
-
-	// ベクトル
-	Vector3 v1 = { 1.2f , -3.9f , 2.5f };
-	Vector3 v2 = { 2.8f , 0.4f , -1.3f };
-
-	// クロス積
-	Vector3 cross = Cross(v1, v2);
-	
-
-	/*   図形   */
-
-	// 回転
-	Vector3 rotate = { 0.0f , 0.0f , 0.0f };
-
-	// 移動
-	Vector3 translate = { 0.0f , 0.0f , 0.0f };
+	// カメラの移動・回転
+	Vector3 cameraTranslate = { 0.0f , 1.9f , -6.49f };
+	Vector3 cameraRotate = { 0.26f , 0.0f , 0.0f };
 
 
-
-	// カメラの位置
-	Vector3 cameraPosition = { 0.0f , 0.0f , -10.0f };
+	// 球
+	Sphere sphere;
+	sphere.center = { 0.0f , 0.0f , 0.0f };
+	sphere.radius = 0.5f;
 
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
+
 		// フレームの開始
 		Novice::BeginFrame();
 
@@ -59,76 +49,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		/// ↓更新処理ここから
 		///
 
-		/*-------------
-		    移動操作
-		-------------*/
-
-		// Wキーで、奥に移動する
-		if (keys[DIK_W])
-		{
-			translate.z += 0.1f;
-		}
-
-		// Sキーで、手前に移動する
-		if(keys[DIK_S])
-		{
-			translate.z -= 0.1f;
-		}
-
-		// Aキーで、左に移動する
-		if (keys[DIK_A])
-		{
-			translate.x -= 0.1f;
-		}
-
-		// Dキーで、右に移動する
-		if (keys[DIK_D])
-		{
-			translate.x += 0.1f;
-		}
+		ImGui::Begin("Window");
+		ImGui::DragFloat3("cameraTranslate", &cameraTranslate.x, 0.01f);
+		ImGui::DragFloat3("cameraRotate", &cameraRotate.x , 0.01f);
+		ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
+		ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
+		ImGui::End();
 
 
-		/*   回転   */
-
-		// Y軸回転させる
-		rotate.y += 0.02f;
-
-		// 1周したら、Y軸回転を初期化する
-		if (rotate.y >= 2.0f * float(M_PI))
-		{
-			rotate.y = 0.0f;
-		}
-
-
-		/*-------------
-		    座標変換
-		-------------*/
-
-		// ワールド行列
-		Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f , 1.0f , 1.0f }, rotate, translate);
+		/*-------------------
+		    座標変換の行列
+		-------------------*/
 
 		// ビュー行列
-		Matrix4x4 viewMatrix = Inverse(MakeAffineMatrix({ 1.0f , 1.0f , 1.0f }, { 0.0f , 0.0f , 0.0f }, cameraPosition));
+		Matrix4x4 viewMatrix = Inverse(MakeAffineMatrix({ 1.0f , 1.0f , 1.0f }, cameraRotate, cameraTranslate));
 
 		// 透視投影行列
-		Matrix4x4 projectionMatrix = MakePrespectiveFovMatrix(0.45f, static_cast<float>(kWindowWidth) / static_cast<float>(kWindowHeight), 0.1f, 100.0f);
+		Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, static_cast<float>(kWindowWidth) / static_cast<float>(kWindowHeight), 0.1f, 100.0f);
 
-
-		// ワールド * ビュー * 透視投影　行列
-		Matrix4x4 worldViewProjectionMatrix = Multiply(Multiply(worldMatrix, viewMatrix), projectionMatrix);
-
-		// ビューポート変換行列
+		// ビューポート行列
 		Matrix4x4 viewportMatrix = MakeViewportMatrix(0.0f, 0.0f, static_cast<float>(kWindowWidth), static_cast<float>(kWindowHeight), 0.0f, 1.0f);
-
-
-		// スクリーン座標の頂点
-		Vector3 screenVertices[3] = { 0.0f };
-
-		for (uint32_t i = 0; i < 3; i++)
-		{
-			Vector3 ndcVertex = Transform(kLocalVertices[i], worldViewProjectionMatrix);
-			screenVertices[i] = Transform(ndcVertex, viewportMatrix);
-		}
 
 
 		///
@@ -139,17 +79,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		/// ↓描画処理ここから
 		///
 
-		// 三角形
-		Novice::DrawTriangle
-		(
-			static_cast<int>(screenVertices[0].x), static_cast<int>(screenVertices[0].y),
-			static_cast<int>(screenVertices[1].x), static_cast<int>(screenVertices[1].y),
-			static_cast<int>(screenVertices[2].x), static_cast<int>(screenVertices[2].y),
-			0xFF0000FF, kFillModeSolid
-		);
 
-		// クロス積の値
-		VectorScreenPrintf(0, 0, cross, " : cross");
+		/*----------
+		    図形
+		----------*/
+
+		// グリッド
+		DrawGrid(Multiply(viewMatrix, projectionMatrix), viewportMatrix);
+
+		// 球
+		DrawSphere(sphere, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0x000000FF);
+
 		
 		///
 		/// ↑描画処理ここまで
