@@ -29,6 +29,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	Vector3 cameraTranslate = { 0.0f , 1.9f , -6.49f };
 	Vector3 cameraRotate = { 0.26f , 0.0f , 0.0f };
 
+	// カーソルの位置を取得する変数
+	int getCursorPointX = 0;
+	int getCursorPointY = 0;
+
+	// カーソルの始点
+	Vector2 cursorOrigin = { 0.0f , 0.0f };
+
+	// カーソルの終点
+	Vector2 cursorDiff = { 0.0f , 0.0f };
+
+	// カーソルによる回転量
+	Vector2 cursorRotate = { 0.0f , 0.0f };
+
+	// カーソルによる総回転量
+	Vector2 cursorRotateSum = { 0.0f , 0.0f };
+
+
 	// 球1
 	Sphere s1;
 	s1.center = { 0.0f , 0.0f , 0.0f };
@@ -57,12 +74,46 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("cameraTranslate", &cameraTranslate.x , 0.01f);
-		ImGui::DragFloat3("cameraRotate", &cameraRotate.x, 0.01f);
+		ImGui::DragFloat3("cameraRotate", &cameraRotate.x , 0.01f);
 		ImGui::DragFloat3("sphere1Center", &s1.center.x, 0.01f);
 		ImGui::DragFloat("sphere1Radius", &s1.radius , 0.01f);
 		ImGui::DragFloat3("sphere2Center", &s2.center.x, 0.01f);
 		ImGui::DragFloat("sphere2Radius", &s2.radius, 0.01f);
 		ImGui::End();
+
+
+		/*----------------
+		    カメラ操作
+		----------------*/
+
+		// Shiftキーを押しながら、マウスの左を押し続けて、スクロールする
+		if (keys[DIK_RSHIFT] || keys[DIK_LSHIFT])
+		{
+			if (Novice::IsPressMouse(0))
+			{
+				// 押した瞬間のカーソルの始点を取得する
+				if (Novice::IsTriggerMouse(0))
+				{
+					Novice::GetMousePosition(&getCursorPointX, &getCursorPointY);
+					cursorOrigin = { static_cast<float>(getCursorPointX) , static_cast<float>(getCursorPointY) };
+
+					// カメラの回転量を記録する
+					cursorRotateSum = { cameraRotate.x , cameraRotate.y };
+				}
+
+				// カーソルの終点を取得する
+				Novice::GetMousePosition(&getCursorPointX, &getCursorPointY);
+				cursorDiff = { static_cast<float>(getCursorPointX) - cursorOrigin.x , static_cast<float>(getCursorPointY) - cursorOrigin.y };
+
+				// 今のカーソルでの回転量を求める
+				cursorRotate.y = cursorDiff.x / 1000.0f;
+				cursorRotate.x = cursorDiff.y / 1000.0f;
+
+				// 記録した回転量と、今の回転量を加算する
+				cameraRotate.x = cursorRotate.x + cursorRotateSum.x;
+				cameraRotate.y = cursorRotate.y + cursorRotateSum.y;
+			}
+		}
 
 
 		/*-------------------
