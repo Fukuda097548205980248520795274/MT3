@@ -51,10 +51,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	s1.center = { 0.0f , 0.0f , 0.0f };
 	s1.radius = 0.3f;
 
-	// 球2
-	Sphere s2;
-	s2.center = { 0.5f , 0.5f , 0.0f };
-	s2.radius = 0.2f;
+	// 平面
+	Plane plane;
+	plane.normal = { 0.0f , 1.0f , 0.0f };
+	plane.distance = 0.0f;
 	
 
 
@@ -77,9 +77,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		ImGui::DragFloat3("cameraRotate", &cameraRotate.x , 0.01f);
 		ImGui::DragFloat3("sphere1Center", &s1.center.x, 0.01f);
 		ImGui::DragFloat("sphere1Radius", &s1.radius , 0.01f);
-		ImGui::DragFloat3("sphere2Center", &s2.center.x, 0.01f);
-		ImGui::DragFloat("sphere2Radius", &s2.radius, 0.01f);
+		ImGui::DragFloat3("planeNormal", &plane.normal.x, 0.01f);
+		ImGui::DragFloat("planeDistance", &plane.distance, 0.01f);
 		ImGui::End();
+
+
+		// 法線を正規化する
+		plane.normal = Normalize(plane.normal);
 
 
 		/*----------------
@@ -141,12 +145,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		// グリッド
 		DrawGrid(Multiply(viewMatrix, projectionMatrix), viewportMatrix);
 
-		// 球2
-		DrawSphere(s2, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0xFFFFFFFF);
+		// 平面
+		DrawPlane(plane, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0xFFFFFFFF);
 
 
-		// 球が触れたら（衝突フラグがtrue）、色を赤くする
-		if (IsCollision(s1, s2))
+		// 当たったら（衝突フラグがtrue）は、赤くする
+		if (IsCollision(s1, plane))
 		{
 			DrawSphere(s1, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0xFF0000FF);
 		}
