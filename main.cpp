@@ -54,11 +54,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		.max{0.0f , 0.0f , 0.0f},
 	};
 
-	// AABB2
-	AABB aabb2
+	// Sphere
+	Sphere sphere
 	{
-		.min{0.2f , 0.2f , 0.2f},
-		.max{1.0f , 1.0f , 1.0f},
+		.center{0.5f , 0.5f , 0.5f},
+		.radius = 0.5f
 	};
 	
 
@@ -82,8 +82,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		ImGui::DragFloat3("cameraRotate", &cameraRotate.x , 0.01f);
 		ImGui::DragFloat3("aabb1Min",&aabb1.min.x , 0.01f);
 		ImGui::DragFloat3("aabb1Max", &aabb1.max.x, 0.01f);
-		ImGui::DragFloat3("aabb2Min", &aabb2.min.x, 0.01f);
-		ImGui::DragFloat3("aabb2Max", &aabb2.max.x, 0.01f);
+		ImGui::DragFloat3("sphereCenter", &sphere.center.x, 0.01f);
+		ImGui::DragFloat("sphereRadius", &sphere.radius);
 		ImGui::End();
 
 
@@ -98,16 +98,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 		aabb1.min.z = (std::min)(aabb1.min.z, aabb1.max.z);
 		aabb1.max.z = (std::max)(aabb1.min.z, aabb1.max.z);
-
-
-		aabb2.min.x = (std::min)(aabb2.min.x, aabb2.max.x);
-		aabb2.max.x = (std::max)(aabb2.min.x, aabb2.max.x);
-
-		aabb2.min.y = (std::min)(aabb2.min.y, aabb2.max.y);
-		aabb2.max.y = (std::max)(aabb2.min.y, aabb2.max.y);
-
-		aabb2.min.z = (std::min)(aabb2.min.z, aabb2.max.z);
-		aabb2.max.z = (std::max)(aabb2.min.z, aabb2.max.z);
 
 
 
@@ -170,21 +160,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		// グリッド
 		DrawGrid(Multiply(viewMatrix, projectionMatrix), viewportMatrix);
 
-
-		// 衝突したら（衝突フラグがtrue）、AABBが赤くなる
-		if (IsCollision(aabb1, aabb2))
+		// 球
+		DrawSphere(sphere, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0xFFFFFFFF);
+		
+		// 衝突したら（衝突フラグがtrue）、AABBを赤くする
+		if (IsCollision(aabb1, sphere))
 		{
 			DrawAABB(aabb1, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0xFF0000FF);
 		}
 		else
 		{
-			// 衝突しなかったら（衝突フラグがfalse）、AABBが白くなる
+			// 衝突していなかったら（衝突フラグがfalse）、AABBを白くする
 			DrawAABB(aabb1, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0xFFFFFFFF);
 		}
-		
-		// AABB
-		DrawAABB(aabb2, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0xFFFFFFFF);
-		
 
 
 		///
