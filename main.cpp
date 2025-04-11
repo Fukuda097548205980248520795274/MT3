@@ -47,18 +47,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	Vector2 cursorRotateSum = { 0.0f , 0.0f };
 
 
-	// 線分
-	Segment segment
+	// 制御点
+	Vector3 controlPoint[3] =
 	{
-		.origin = {-0.7f , 0.3f , 0.0f},
-		.diff = {2.0f , -0.5f , 0.0f}
-	};
-
-	// AABB1
-	AABB aabb1
-	{
-		.min{-0.5f , -0.5f , -0.5f},
-		.max{0.5f , 0.5f , 0.5f},
+		{-0.8f , 0.58f , 1.0f},
+		{1.76f , 1.0f , -0.3f},
+		{0.94f , -0.7f , 2.3f}
 	};
 	
 
@@ -80,24 +74,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		ImGui::Begin("Window");
 		ImGui::DragFloat3("cameraTranslate", &cameraTranslate.x , 0.01f);
 		ImGui::DragFloat3("cameraRotate", &cameraRotate.x , 0.01f);
-		ImGui::DragFloat3("aabb1Min",&aabb1.min.x , 0.01f);
-		ImGui::DragFloat3("aabb1Max", &aabb1.max.x, 0.01f);
-		ImGui::DragFloat3("segmentOrigin",&segment.origin.x , 0.01f);
-		ImGui::DragFloat3("segmentDiff", &segment.diff.x, 0.01f);
+		ImGui::DragFloat3("controlPoint[0]",&controlPoint[0].x , 0.01f);
+		ImGui::DragFloat3("controlPoint[1]", &controlPoint[1].x, 0.01f);
+		ImGui::DragFloat3("controlPoint[2]", &controlPoint[2].x, 0.01f);
 		ImGui::End();
-
-
-
-		// 最小点と最大点が逆にならないようにする
-
-		aabb1.min.x = (std::min)(aabb1.min.x, aabb1.max.x);
-		aabb1.max.x = (std::max)(aabb1.min.x, aabb1.max.x);
-
-		aabb1.min.y = (std::min)(aabb1.min.y, aabb1.max.y);
-		aabb1.max.y = (std::max)(aabb1.min.y, aabb1.max.y);
-
-		aabb1.min.z = (std::min)(aabb1.min.z, aabb1.max.z);
-		aabb1.max.z = (std::max)(aabb1.min.z, aabb1.max.z);
 
 
 
@@ -160,19 +140,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		// グリッド
 		DrawGrid(Multiply(viewMatrix, projectionMatrix), viewportMatrix);
 
-		// 線分
-		DrawSegment(segment, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0xFFFFFFFF);
-
-		// 衝突したら（衝突フラグがtrue）、AABBが赤くなる
-		if (IsCollision(aabb1, segment))
-		{
-			DrawAABB(aabb1, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0xFF0000FF);
-		}
-		else
-		{
-			// 衝突していなかったら（衝突フラグがfalse）、AABBが白くなる
-			DrawAABB(aabb1, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0xFFFFFFFF);
-		}
+		// ベジェ曲線
+		DrawBezier(controlPoint[0], controlPoint[1], controlPoint[2], Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0x0000FFFF);
 
 
 		///
