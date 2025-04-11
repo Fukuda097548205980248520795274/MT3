@@ -47,18 +47,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	Vector2 cursorRotateSum = { 0.0f , 0.0f };
 
 
+	// 線分
+	Segment segment
+	{
+		.origin = {-0.7f , 0.3f , 0.0f},
+		.diff = {2.0f , -0.5f , 0.0f}
+	};
+
 	// AABB1
 	AABB aabb1
 	{
 		.min{-0.5f , -0.5f , -0.5f},
-		.max{0.0f , 0.0f , 0.0f},
-	};
-
-	// Sphere
-	Sphere sphere
-	{
-		.center{0.5f , 0.5f , 0.5f},
-		.radius = 0.5f
+		.max{0.5f , 0.5f , 0.5f},
 	};
 	
 
@@ -82,8 +82,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		ImGui::DragFloat3("cameraRotate", &cameraRotate.x , 0.01f);
 		ImGui::DragFloat3("aabb1Min",&aabb1.min.x , 0.01f);
 		ImGui::DragFloat3("aabb1Max", &aabb1.max.x, 0.01f);
-		ImGui::DragFloat3("sphereCenter", &sphere.center.x, 0.01f);
-		ImGui::DragFloat("sphereRadius", &sphere.radius);
+		ImGui::DragFloat3("segmentOrigin",&segment.origin.x , 0.01f);
+		ImGui::DragFloat3("segmentDiff", &segment.diff.x, 0.01f);
 		ImGui::End();
 
 
@@ -160,17 +160,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		// グリッド
 		DrawGrid(Multiply(viewMatrix, projectionMatrix), viewportMatrix);
 
-		// 球
-		DrawSphere(sphere, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0xFFFFFFFF);
-		
-		// 衝突したら（衝突フラグがtrue）、AABBを赤くする
-		if (IsCollision(aabb1, sphere))
+		// 線分
+		DrawSegment(segment, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0xFFFFFFFF);
+
+		// 衝突したら（衝突フラグがtrue）、AABBが赤くなる
+		if (IsCollision(aabb1, segment))
 		{
 			DrawAABB(aabb1, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0xFF0000FF);
 		}
 		else
 		{
-			// 衝突していなかったら（衝突フラグがfalse）、AABBを白くする
+			// 衝突していなかったら（衝突フラグがfalse）、AABBが白くなる
 			DrawAABB(aabb1, Multiply(viewMatrix, projectionMatrix), viewportMatrix, 0xFFFFFFFF);
 		}
 
